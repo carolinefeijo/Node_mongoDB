@@ -1,25 +1,27 @@
 const { MongoClient, ObjectId } = require("mongodb");
 const express = require("express");
 
+let db = require("./Models/DB");
+
 const app = express();
-let db;
+// let db;
 const PORT = 8001;
 app.use(express.json());
 
-async function connectMongoDb() {
-  const client = new MongoClient(
-    "mongodb+srv://carolinefeijo:160812@cluster0.7quta9q.mongodb.net/?retryWrites=true&w=majority",
-    { useNewUrlParser: true }
-  );
+// async function connectMongoDb() {
+//   const client = new MongoClient(
+//     "mongodb+srv://carolinefeijo:160812@cluster0.7quta9q.mongodb.net/?retryWrites=true&w=majority",
+//     { useNewUrlParser: true }
+//   );
 
-  try {
-    await client.connect();
-    console.log("Conectei ao DB");
-    db = client.db();
-  } catch (error) {
-    console.log("Deu ruim", error);
-  }
-}
+//   try {
+//     await client.connect();
+//     console.log("Conectei ao DB");
+//     db = client.db();
+//   } catch (error) {
+//     console.log("Deu ruim", error);
+//   }
+// }
 
 app.get("/list", async function (req, res) {
   try {
@@ -38,14 +40,19 @@ app.get("/list", async function (req, res) {
 });
 
 app.post("/", function (req, res) {
-  const { name, lastName, telephone, birthDate } = req.body;
+  // const { name, lastName, telephone, birthDate } = req.body;
+
+  const user = req.body;
+
+  console.log(user);
   try {
-    db.collection("teachers").insertOne({
-      name,
-      lastName,
-      telephone,
-      birthDate,
-    });
+    db.saveNewUser(user);
+    // db.collection("teachers").insertOne({
+    //   name,
+    //   lastName,
+    //   telephone,
+    //   birthDate,
+    // });
     res.status(201).json({ message: "Success when registering !" });
   } catch (error) {
     res.status(400).json({ message: "What a shame, we have an error!" });
@@ -116,7 +123,8 @@ app.delete("/:teacherId", async function (req, res) {
   }
 });
 
-connectMongoDb();
+// connectMongoDb();
+
 app.listen(PORT, () => {
   console.log(`Rolling in the door ${PORT}...`);
 });
